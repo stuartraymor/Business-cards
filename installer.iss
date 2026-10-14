@@ -2,7 +2,7 @@
 ; Requires dist\BusinessCards.exe, created by build_windows.bat.
 
 [Setup]
-AppId={{6F1C2B7E-4D2A-4B8E-9C1D-BUSINESSCARDS01}
+AppId={{BB7758F8-A7B3-460F-84D5-F464738FCED9}
 AppName=Business Cards
 AppVersion=1.0.0
 AppPublisher=Stuart Raymor
