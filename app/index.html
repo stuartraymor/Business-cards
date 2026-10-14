@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business Cards</title>
+<style>
+  :root {
+    --paper: #edf0ec;
+    --sheet: #f8faf7;
+    --ink: #17212b;
+    --ink-2: #4a5661;
+    --rule: #c5ccd1;
+    --rule-soft: #dfe4e7;
+    --blue: #1f4e9c;
+    --blue-deep: #173d7a;
+    --blue-wash: #dce6f5;
+    --amber: #fbe7a1;
+    --red: #a3282e;
+    --font: Bahnschrift, "Segoe UI", system-ui, sans-serif;
+    --font-cond: "Bahnschrift Condensed", Bahnschrift, "Segoe UI", system-ui, sans-serif;
+    --t-xs: 12px; --t-sm: 13px; --t-base: 14px; --t-md: 16px; --t-lg: 20px; --t-xl: 26px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: var(--font);
+    font-size: var(--t-base);
+    line-height: 1.4;
+    color: var(--ink);
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+    font-variant-numeric: tabular-nums;
+  }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  /* ---------- header: brand and actions ---------- */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 18px;
+    background: var(--sheet);
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; margin-right: 8px; }
+  .brand-mark {
+    width: 22px; height: 16px;
+    border: 2px solid var(--blue);
+    border-radius: 2px;
+    position: relative;
+  }
+  .brand-mark::after {
+    content: "";
+    position: absolute; left: 3px; right: 3px; bottom: 3px;
+    height: 2px; background: var(--blue);
+  }
+  .brand h1 {
+    font-family: var(--font-cond);
+    font-weight: 600;
+    font-size: var(--t-lg);
+    letter-spacing: .01em;
+    margin: 0;
+  }
+  .actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .actions .group { display: flex; gap: 6px; }
+  .divider { width: 1px; height: 22px; background: var(--rule); margin: 0 6px; }
+
+  button {
+    font: inherit;
+    font-size: var(--t-sm);
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 6px 11px;
+    cursor: pointer;
+    transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+  }
+  button:hover { background: var(--blue-wash); border-color: #aabbd6; }
+  button:active { background: #c9d8ee; }
+  button.primary { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+  button.primary:hover { background: var(--blue-deep); border-color: var(--blue-deep); }
+  button.quiet { border-color: transparent; color: var(--ink-2); }
+  button.quiet:hover { background: var(--blue-wash); color: var(--ink); }
+  button.danger { color: var(--red); }
+  button.danger:hover { background: #f6e3e4; border-color: #e2b2b5; }
+  button:disabled { opacity: .4; cursor: default; background: transparent; border-color: var(--rule); }
+
+  /* ---------- sheet bar: search and filters ---------- */
+  .sheetbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 18px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  input[type=search], input[type=text], input[type=email], select, textarea {
+    font: inherit;
+    font-size: var(--t-sm);
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 6px 9px;
+    width: 100%;
+    min-width: 0;
+  }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--blue); outline-offset: -1px; border-color: var(--blue); }
+  #search { flex: 1 1 300px; max-width: 520px; }
+  .filter { display: flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: var(--t-sm); }
+  .filter select { width: auto; }
+  .check { display: inline-flex; gap: 6px; align-items: center; color: var(--ink-2); font-size: var(--t-sm); cursor: pointer; }
+  .count { margin-left: auto; color: var(--ink-2); font-size: var(--t-sm); }
+
+  /* ---------- main: parts list and title block ---------- */
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(560px, 1fr) minmax(360px, 400px);
+    min-height: 0;
+  }
+  #listPane { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--rule); background: var(--sheet); }
+  #tableWrap { overflow: auto; flex: 1; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    position: sticky; top: 0; z-index: 1;
+    background: var(--sheet);
+    text-align: left;
+    font-size: var(--t-xs);
+    font-weight: 600;
+    color: var(--ink-2);
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--ink);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  thead th:hover { color: var(--ink); }
+  thead th.sorted::after { content: " ▲"; color: var(--blue); }
+  thead th.sorted.desc::after { content: " ▼"; }
+  table { font-size: var(--t-sm); }
+  tbody td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--rule-soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 210px;
+    vertical-align: middle;
+  }
+  tbody td.primary-cell { font-weight: 600; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover td { background: #eef3fb; }
+  tbody tr.selected td { background: var(--blue-wash); }
+  tbody tr.selected td:first-child { box-shadow: inset 3px 0 0 var(--blue); }
+  tbody tr.empty { cursor: default; }
+  tbody tr.empty:hover td { background: transparent; }
+  tbody tr.empty td { white-space: normal; color: var(--ink-2); padding: 28px 12px; }
+  .star { color: var(--blue); margin-right: 4px; }
+  .muted { color: var(--ink-2); }
+  #countLine { display: none; }
+
+  /* ---------- title block: the card editor ---------- */
+  #editor { overflow: auto; padding: 16px; background: var(--paper); }
+  .sheet-block { background: var(--sheet); border: 1px solid var(--ink); animation: settle .18s ease-out both; }
+  @keyframes settle { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  #banner {
+    display: none;
+    margin: 0;
+    padding: 9px 12px;
+    background: var(--blue-wash);
+    border-bottom: 1px solid var(--rule);
+    border-left: 3px solid var(--blue);
+    font-size: var(--t-sm);
+    white-space: pre-line;
+    color: var(--ink);
+  }
+  #banner.show { display: block; }
+
+  #thumb {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 150px;
+    background: #fff;
+    border-bottom: 1px solid var(--ink);
+    cursor: zoom-in;
+    overflow: hidden;
+    padding: 10px;
+  }
+  #thumb img { max-width: 100%; max-height: 210px; display: block; }
+  #thumb span { color: var(--ink-2); font-size: var(--t-sm); }
+
+  form#form { margin: 0; }
+  .cells { display: grid; grid-template-columns: 1fr 1fr; }
+  .cell {
+    padding: 8px 12px 7px;
+    border-bottom: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+    min-width: 0;
+  }
+  .cell.wide { grid-column: 1 / -1; border-right: none; }
+  .cell.right-edge { border-right: none; }
+  .cell label { display: block; font-size: var(--t-xs); color: var(--ink-2); margin-bottom: 2px; }
+  .cell input, .cell select, .cell textarea {
+    border: none;
+    background: transparent;
+    padding: 2px 0;
+    font-size: var(--t-base);
+    color: var(--ink);
+    width: 100%;
+  }
+  .cell input:focus, .cell select:focus, .cell textarea:focus { outline: none; box-shadow: inset 0 -2px 0 var(--blue); }
+  .cell textarea { resize: vertical; min-height: 52px; }
+  .cell input.low, .cell select.low, .cell textarea.low { background: var(--amber); }
+  .cell.low-cell { background: var(--amber); }
+  .note { color: var(--red); font-size: var(--t-xs); margin-top: 2px; }
+  .note:empty { display: none; }
+  .cell.check-box { display: flex; align-items: center; gap: 8px; }
+  .cell.check-box label { margin: 0; color: var(--ink); font-size: var(--t-sm); }
+
+  .footer { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--ink); align-items: center; flex-wrap: wrap; }
+  .footer .grow { flex: 1; }
+
+  #status {
+    padding: 6px 18px;
+    font-size: var(--t-xs);
+    color: var(--ink-2);
+    border-top: 1px solid var(--rule);
+    background: var(--sheet);
+    min-height: 28px;
+  }
+
+  /* ---------- dialogs ---------- */
+  dialog {
+    border: 1px solid var(--ink);
+    border-radius: 4px;
+    padding: 0;
+    background: var(--sheet);
+    color: var(--ink);
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+  dialog::backdrop { background: rgba(23, 33, 43, .42); }
+  dialog .dialog-head { padding: 12px 16px; border-bottom: 1px solid var(--rule); font-family: var(--font-cond); font-size: var(--t-md); font-weight: 600; }
+  dialog .dialog-body { padding: 14px 16px; }
+  dialog .dialog-foot { display: flex; gap: 8px; justify-content: flex-end; padding: 10px 16px; border-top: 1px solid var(--rule); }
+  #viewerImg { max-width: 85vw; max-height: 78vh; display: block; background: #fff; }
+  #pasteText { width: 440px; height: 180px; resize: vertical; }
+
+  #dropHint {
+    position: fixed; inset: 10px;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(31, 78, 156, .08);
+    border: 2px dashed var(--blue);
+    font-family: var(--font-cond);
+    font-size: var(--t-lg);
+    color: var(--blue-deep);
+    pointer-events: none;
+  }
+  body.dragging #dropHint { display: flex; }
+
+  @media (max-width: 920px) {
+    main { grid-template-columns: 1fr; }
+    #listPane { border-right: none; border-bottom: 1px solid var(--rule); max-height: 50vh; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="brand-mark" aria-hidden="true"></span><h1>Business Cards</h1></div>
+  <div class="actions">
+    <div class="group">
+      <button id="btnFile" class="primary" title="Ctrl+O">Add card photo</button>
+      <button id="btnPaste" title="Ctrl+Shift+V">Paste screenshot</button>
+      <button id="btnText">Paste text</button>
+      <button id="btnNew" title="Ctrl+N">New card</button>
+    </div>
+    <span class="divider" aria-hidden="true"></span>
+    <div class="group">
+      <button id="btnCsv" class="quiet">Export to Excel</button>
+      <button id="btnVcf" class="quiet">Export contacts</button>
+      <button id="btnData" class="quiet" title="Open the folder where your cards are stored">Data folder</button>
+    </div>
+  </div>
+  <input id="fileInput" type="file" accept="image/*" multiple hidden>
+</header>
+
+<div class="sheetbar">
+  <input id="search" type="search" placeholder="Search name, company, phone, email, tags, notes" aria-label="Search cards">
+  <label class="filter">Category
+    <select id="category" aria-label="Category">
+      <option value="">All</option><option>Vendor</option><option>Reseller</option><option>Business</option><option>Other</option>
+    </select>
+  </label>
+  <label class="filter">Tag
+    <select id="tag" aria-label="Tag"><option value="">All</option></select>
+  </label>
+  <label class="check"><input id="favOnly" type="checkbox"> Favorites only</label>
+  <label class="filter">Sort by
+    <select id="sort" aria-label="Sort by">
+      <option value="company">Company</option><option value="name">Name</option>
+      <option value="category">Category</option><option value="created">Newest added</option>
+      <option value="updated">Recently updated</option>
+    </select>
+  </label>
+  <button id="btnDir" class="quiet" aria-label="Change sort direction">A to Z</button>
+  <span class="count" id="countText"></span>
+</div>
+
+<main>
+  <section id="listPane">
+    <div id="tableWrap">
+      <table>
+        <thead><tr>
+          <th data-key="name">Name</th><th>Title</th><th data-key="company">Company</th>
+          <th data-key="category">Category</th><th>Phone</th><th>Email</th><th data-key="updated">Updated</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div id="countLine"></div>
+  </section>
+
+  <section id="editor">
+    <div class="sheet-block">
+      <div id="banner"></div>
+      <div id="thumb" title="Click to view the full card"><span>No card image</span></div>
+      <form id="form" autocomplete="off">
+        <div class="cells">
+          <div class="cell wide"><label for="f_name">Name</label><input id="f_name" type="text"><div class="note" data-note="name"></div></div>
+          <div class="cell wide"><label for="f_title">Title</label><input id="f_title" type="text"></div>
+          <div class="cell wide"><label for="f_company">Company</label><input id="f_company" type="text"><div class="note" data-note="company"></div></div>
+          <div class="cell"><label for="f_phone">Phone</label><input id="f_phone" type="text"><div class="note" data-note="phone"></div></div>
+          <div class="cell right-edge"><label for="f_mobile">Mobile</label><input id="f_mobile" type="text"><div class="note" data-note="mobile"></div></div>
+          <div class="cell"><label for="f_fax">Fax</label><input id="f_fax" type="text"><div class="note" data-note="fax"></div></div>
+          <div class="cell right-edge"><label for="f_category">Category</label><select id="f_category"><option>Vendor</option><option>Reseller</option><option>Business</option><option>Other</option></select></div>
+          <div class="cell wide"><label for="f_email">Email</label><input id="f_email" type="email"><div class="note" data-note="email"></div></div>
+          <div class="cell"><label for="f_website">Website</label><input id="f_website" type="text"></div>
+          <div class="cell right-edge"><label for="f_tags">Tags, separated by commas</label><input id="f_tags" type="text"></div>
+          <div class="cell wide"><label for="f_address">Address</label><input id="f_address" type="text"></div>
+          <div class="cell wide"><label for="f_notes">Notes</label><textarea id="f_notes" rows="3"></textarea></div>
+          <div class="cell wide check-box"><input id="f_fav" type="checkbox"><label for="f_fav">Mark as favorite</label></div>
+        </div>
+        <div class="footer">
+          <button id="btnSave" class="primary" type="submit">Save card</button>
+          <button id="btnDiscard" type="button">Discard</button>
+          <span class="grow"></span>
+          <button id="btnViewImg" type="button">View full card</button>
+          <button id="btnDelete" type="button" class="danger">Delete card</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<div id="status" role="status" aria-live="polite"></div>
+
+<dialog id="viewer">
+  <div class="dialog-head">Card image</div>
+  <div class="dialog-body"><img id="viewerImg" alt="Business card"></div>
+  <div class="dialog-foot"><button id="viewerClose" class="primary">Close</button></div>
+</dialog>
+<dialog id="pasteDlg">
+  <form method="dialog">
+    <div class="dialog-head">Paste card text</div>
+    <div class="dialog-body">
+      <label for="pasteText" class="muted">Copy the text from an email signature or a card, then paste it here.</label>
+      <textarea id="pasteText"></textarea>
+    </div>
+    <div class="dialog-foot"><button value="cancel">Cancel</button><button value="ok" class="primary">Read card</button></div>
+  </form>
+</dialog>
+<div id="dropHint">Drop card photos here</div>
+
+<script src="parser.js"></script>
+<script src="imaging.js"></script>
+<script src="renderer.js"></script>
+</body>
+</html>

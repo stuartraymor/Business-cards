@@ -1,10 +1,6 @@
-__pycache__/
-*.pyc
-build/
+node_modules/
+*.zip
+electron.zip
 dist/
-*.spec.bak
-.venv/
-venv/
-.idea/
-.vscode/
-*.log
+cards.json
+images/

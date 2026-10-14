@@ -1,0 +1,10 @@
+{
+  "name": "business-cards",
+  "productName": "Business Cards",
+  "version": "1.0.0",
+  "description": "Capture and organize business cards, locally on your computer",
+  "main": "main.js",
+  "author": "Stuart Raymor",
+  "license": "MIT",
+  "private": true
+}
