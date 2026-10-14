@@ -18,6 +18,9 @@ Take a photo or screenshot of a card (or paste text), and the app crops the card
 
 ## Install (Windows)
 
+Build it yourself, with no GitHub account needed: see [BUILD.md](BUILD.md). It produces an `.exe` and an installer with a normal uninstaller.
+
+
 1. Go to the [Releases](../../releases) page and download `BusinessCards.exe`.
 2. Run it. Windows may show a SmartScreen warning because the app is not code-signed; choose **More info → Run anyway** if you trust the source.
 
