@@ -1,0 +1,14 @@
+# Core app
+PySide6>=6.6
+opencv-python-headless>=4.8
+numpy>=1.26
+pytesseract>=0.3.10
+# Windows built-in OCR (Windows 10/11). Ignored on other platforms.
+winrt-runtime; sys_platform == "win32"
+winrt-Windows.Media.Ocr; sys_platform == "win32"
+winrt-Windows.Graphics.Imaging; sys_platform == "win32"
+winrt-Windows.Storage.Streams; sys_platform == "win32"
+# Optional: PDF support (first page of a PDF)
+pymupdf>=1.23
+# Build and test
+pyinstaller>=6.0

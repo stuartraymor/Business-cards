@@ -1,0 +1,64 @@
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run tests
+        run: python -m unittest discover -s tests -t .
+
+  build:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Build BusinessCards.exe
+        run: >
+          pyinstaller --noconfirm --onefile --windowed --name BusinessCards
+          --collect-submodules winrt run.py
+      - name: Smoke test the packaged app starts
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath dist\BusinessCards.exe -PassThru
+          Start-Sleep -Seconds 15
+          if ($p.HasExited) { throw "BusinessCards.exe exited early with code $($p.ExitCode)" }
+          Stop-Process -Id $p.Id -Force
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BusinessCards-windows
+          path: dist/BusinessCards.exe
+
+  release:
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: BusinessCards-windows
+      - name: Attach exe to the release
+        shell: pwsh
+        run: gh release upload "${{ github.event.release.tag_name }}" BusinessCards.exe --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
