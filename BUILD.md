@@ -2,6 +2,14 @@
 
 Everything runs locally. No GitHub or cloud services are needed.
 
+## Easiest: double-click one file
+
+Double-click **Build and Install Business Cards.bat**. It installs Python and Inno Setup if they're missing (using winget, which is included with Windows 10 and 11), builds the app, and starts the installer.
+
+If it asks you to reopen it after installing Python, close the window and double-click it again.
+
+## Manual steps
+
 ## What you need (one time)
 
 1. **Python 3.12** from https://www.python.org/downloads/windows/
